@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adminbereich – Bestellungen</title>
+  <title>Adminbereich – Produkte & Bestellungen</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
@@ -15,7 +15,9 @@
 <body class="bg-gray-100 min-h-screen">
   <header class="bg-white shadow-md p-4 flex justify-between items-center">
     <h1 class="text-xl font-bold text-[var(--accent)]">PB-Automobile Admin</h1>
-    <a href="index.html" class="text-sm text-gray-600 hover:underline">Zurück zur Startseite</a>
+    <div>
+      <button id="add-product-btn" class="bg-[var(--accent)] text-white px-4 py-2 rounded-md">Produkt hinzufügen</button>
+    </div>
   </header>
 
   <main class="p-4 max-w-6xl mx-auto">
@@ -23,17 +25,96 @@
     <div id="order-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
   </main>
 
+  <!-- Modal: Produkt hinzufügen -->
+  <div id="product-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+      <h3 class="text-xl font-semibold mb-4">Produkt erstellen</h3>
+      <form id="product-form" class="flex flex-col gap-4">
+        <input type="text" id="product-name" placeholder="Produktname" required class="border px-3 py-2 rounded-md">
+
+        <select id="product-category" required class="border px-3 py-2 rounded-md">
+          <option value="">Kategorie wählen</option>
+          <option value="Felgen">Felgen</option>
+          <option value="Lackierung">Lackierung</option>
+          <option value="Interieur">Interieur</option>
+          <option value="Exterieur">Exterieur</option>
+        </select>
+
+        <input type="file" id="product-image" accept="image/*" required class="border rounded-md">
+        <div class="flex justify-end gap-2">
+          <button type="button" id="close-modal" class="text-gray-600">Abbrechen</button>
+          <button type="submit" class="bg-[var(--accent)] text-white px-4 py-2 rounded-md">Speichern</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script type="module" src="firebase-config.js"></script>
   <script type="module">
     import {
       collection,
       getDocs,
       doc,
-      getDoc
+      getDoc,
+      addDoc
     } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
     const db = window.db;
+    const storage = getStorage();
+
     const orderList = document.getElementById("order-list");
+    const modal = document.getElementById("product-modal");
+    const openBtn = document.getElementById("add-product-btn");
+    const closeBtn = document.getElementById("close-modal");
+    const productForm = document.getElementById("product-form");
+
+    openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+    closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
+
+    productForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("product-name").value;
+      const category = document.getElementById("product-category").value;
+      const imageFile = document.getElementById("product-image").files[0];
+
+      if (!imageFile) return alert("Bitte ein Bild auswählen");
+
+      const img = new Image();
+      const reader = new FileReader();
+
+      reader.onload = function (event) {
+        img.onload = async function () {
+          if (img.width <= 500 && img.height <= 500) {
+            const storageRef = ref(storage, `product-images/${Date.now()}_${imageFile.name}`);
+            await uploadBytes(storageRef, imageFile);
+            const imageUrl = await getDownloadURL(storageRef);
+
+            await addDoc(collection(db, "products"), {
+              name,
+              category,
+              imageUrl,
+              createdAt: new Date().toISOString()
+            });
+
+            alert("Produkt erstellt");
+            modal.classList.add("hidden");
+            productForm.reset();
+          } else {
+            alert("Bild darf maximal 500x500 Pixel groß sein.");
+          }
+        };
+        img.src = event.target.result;
+      };
+
+      reader.readAsDataURL(imageFile);
+    });
 
     async function loadOrders() {
       const ordersSnapshot = await getDocs(collection(db, "orders"));
