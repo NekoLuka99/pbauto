@@ -4,38 +4,91 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shop Startseite</title>
+  <title>PB-Automobile</title>
+  <style>
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background-color: #f0f0f0;
+      border-bottom: 1px solid #ccc;
+    }
+    main {
+      padding: 1rem;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Mein Shop</h1>
-    <a href="admin.html">
-      <button>Admin Login</button>
-    </a>
-  </header>
-
-  <main>
-    <h2>Produkte</h2>
-    <div id="product-list"></div>
-
-    <h3>Bestellung</h3>
-    <form id="order-form">
-      <input type="text" id="name" placeholder="Name" required />
-      <input type="text" id="phone" placeholder="Telefonnummer" required />
-      <select id="selected-product"></select>
-      <button type="submit">Bestellen</button>
+  <div id="login-area">
+    <h2>Login</h2>
+    <form id="login-form">
+      <input type="text" id="username" placeholder="Benutzername" required>
+      <input type="password" id="password" placeholder="Passwort" required>
+      <button type="submit">Login</button>
     </form>
-  </main>
+  </div>
+
+  <div id="main-content" style="display: none;">
+    <header>
+      <h1>PB-Automobile</h1>
+      <div id="admin-button-area"></div>
+    </header>
+
+    <main>
+      <h2>Produkte</h2>
+      <div id="product-list"></div>
+
+      <h3>Bestellung</h3>
+      <form id="order-form">
+        <input type="text" id="name" placeholder="Name" required />
+        <input type="text" id="phone" placeholder="Telefonnummer" required />
+        <select id="selected-product"></select>
+        <button type="submit">Bestellen</button>
+      </form>
+    </main>
+  </div>
 
   <script type="module" src="firebase-config.js"></script>
   <script type="module">
-    import { collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    import { collection, getDocs, query, where, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
     const db = window.db;
-    const productList = document.getElementById("product-list");
-    const select = document.getElementById("selected-product");
+
+    const loginForm = document.getElementById("login-form");
+    const loginArea = document.getElementById("login-area");
+    const mainContent = document.getElementById("main-content");
+    const adminButtonArea = document.getElementById("admin-button-area");
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      const q = query(collection(db, "users"), where("username", "==", username), where("password", "==", password));
+      const snapshot = await getDocs(q);
+
+      if (!snapshot.empty) {
+        const userData = snapshot.docs[0].data();
+        loginArea.style.display = "none";
+        mainContent.style.display = "block";
+
+        if (userData.isAdmin) {
+          const btn = document.createElement("a");
+          btn.href = "admin.html";
+          btn.innerHTML = '<button>Adminbereich</button>';
+          adminButtonArea.appendChild(btn);
+        }
+
+        loadProducts();
+      } else {
+        alert("Login fehlgeschlagen");
+      }
+    });
 
     async function loadProducts() {
+      const productList = document.getElementById("product-list");
+      const select = document.getElementById("selected-product");
       const querySnapshot = await getDocs(collection(db, "products"));
       querySnapshot.forEach((doc) => {
         const data = doc.data();
@@ -52,13 +105,12 @@
         select.appendChild(option);
       });
     }
-    loadProducts();
 
     document.getElementById("order-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = document.getElementById("name").value;
       const phone = document.getElementById("phone").value;
-      const productId = select.value;
+      const productId = document.getElementById("selected-product").value;
 
       await addDoc(collection(db, "orders"), {
         name,
