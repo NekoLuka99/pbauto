@@ -76,6 +76,12 @@
     const db = window.db;
     const storage = getStorage();
 
+    const modal = document.getElementById("product-modal");
+const openBtn = document.getElementById("add-product-btn");
+
+openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+
+
     openBtn.addEventListener("click", () => {
   console.log("Button wurde geklickt");
   modal.classList.remove("hidden");
