@@ -17,11 +17,11 @@ const logoutBtn = document.getElementById("logout-btn");
 // Automatischer Login bei vorhandenen Daten im localStorage
 const savedUser = JSON.parse(localStorage.getItem("user"));
 if (savedUser) {
-  loginForm.classList.add("hidden");
+  loginForm?.classList.add("hidden");
   logoutBtn?.classList.remove("hidden");
   mainContent?.classList.remove("hidden");
 
-  if (savedUser.isAdmin) {
+  if (savedUser.isAdmin && adminButtonArea) {
     const btn = document.createElement("a");
     btn.href = "admin.html";
     btn.innerHTML = '<button class="bg-gray-800 text-white px-4 py-2 rounded-md">Adminbereich</button>';
@@ -53,7 +53,7 @@ loginForm?.addEventListener("submit", async (e) => {
       isAdmin: userData.isAdmin || false
     }));
 
-    location.reload(); // Reload zum Aktualisieren der Sicht
+    location.reload();
   } else {
     alert("Login fehlgeschlagen");
   }
@@ -65,7 +65,7 @@ logoutBtn?.addEventListener("click", () => {
   location.reload();
 });
 
-// Produktanzeige & Bestellung (optional, wenn auf der Seite vorhanden)
+// Produktanzeige & Bestellung (optional)
 async function loadProducts() {
   const productList = document.getElementById("product-list");
   const select = document.getElementById("selected-product");
