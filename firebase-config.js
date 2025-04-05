@@ -4,13 +4,13 @@
   import { getFirestore } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "DEIN_API_KEY",
-    authDomain: "DEIN_PROJEKT.firebaseapp.com",
-    projectId: "DEIN_PROJEKT",
-    storageBucket: "DEIN_PROJEKT.appspot.com",
-    messagingSenderId: "...",
-    appId: "..."
-  };
+  apiKey: "AIzaSyDiRgzIkczQYJFj9Sp7vCcHybCrZydYlhA",
+  authDomain: "pbauto-bf07c.firebaseapp.com",
+  projectId: "pbauto-bf07c",
+  storageBucket: "pbauto-bf07c.firebasestorage.app",
+  messagingSenderId: "491118168248",
+  appId: "1:491118168248:web:cbdb5e37cc19ca2b65cc4d"
+};
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
