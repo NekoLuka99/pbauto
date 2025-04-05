@@ -13,6 +13,23 @@ const loginForm = document.getElementById("login-form");
 const mainContent = document.getElementById("main-content");
 const adminButtonArea = document.getElementById("admin-button-area");
 
+// Automatischer Login bei vorhandenen Daten im localStorage
+const savedUser = JSON.parse(localStorage.getItem("user"));
+if (savedUser) {
+  loginForm.classList.add("hidden");
+  mainContent.classList.remove("hidden");
+
+  if (savedUser.isAdmin) {
+    const btn = document.createElement("a");
+    btn.href = "admin.html";
+    btn.innerHTML = '<button class="bg-gray-800 text-white px-4 py-2 rounded-md">Adminbereich</button>';
+    adminButtonArea.classList.remove("hidden");
+    adminButtonArea.appendChild(btn);
+  }
+
+  loadProducts();
+}
+
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const username = document.getElementById("username").value;
@@ -28,14 +45,19 @@ loginForm.addEventListener("submit", async (e) => {
   if (!snapshot.empty) {
     const userData = snapshot.docs[0].data();
 
+    // Speichere Login-Daten im localStorage
+    localStorage.setItem("user", JSON.stringify({
+      username: username,
+      isAdmin: userData.isAdmin || false
+    }));
+
     loginForm.classList.add("hidden");
     mainContent.classList.remove("hidden");
 
     if (userData.isAdmin) {
       const btn = document.createElement("a");
       btn.href = "admin.html";
-      btn.innerHTML =
-        '<button class="bg-gray-800 text-white px-4 py-2 rounded-md">Adminbereich</button>';
+      btn.innerHTML = '<button class="bg-gray-800 text-white px-4 py-2 rounded-md">Adminbereich</button>';
       adminButtonArea.classList.remove("hidden");
       adminButtonArea.appendChild(btn);
     }
