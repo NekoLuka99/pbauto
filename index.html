@@ -5,46 +5,47 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PB-Automobile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      background-color: #f0f0f0;
-      border-bottom: 1px solid #ccc;
-    }
-    main {
-      padding: 1rem;
+    :root {
+      --accent: #0088ff;
     }
   </style>
 </head>
-<body>
-  <div id="login-area">
-    <h2>Login</h2>
-    <form id="login-form">
-      <input type="text" id="username" placeholder="Benutzername" required>
-      <input type="password" id="password" placeholder="Passwort" required>
-      <button type="submit">Login</button>
-    </form>
+<body class="bg-gray-100 min-h-screen">
+  <div id="login-area" class="flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
+      <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
+      <form id="login-form" class="flex flex-col gap-4">
+        <input type="text" id="username" placeholder="Benutzername" required class="border px-3 py-2 rounded-md">
+        <input type="password" id="password" placeholder="Passwort" required class="border px-3 py-2 rounded-md">
+        <button type="submit" class="bg-[var(--accent)] text-white py-2 rounded-md hover:opacity-90">Login</button>
+      </form>
+    </div>
   </div>
 
   <div id="main-content" style="display: none;">
-    <header>
-      <h1>PB-Automobile</h1>
+    <header class="bg-white shadow-md p-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold text-[var(--accent)]">PB-Automobile</h1>
       <div id="admin-button-area"></div>
     </header>
 
-    <main>
-      <h2>Produkte</h2>
-      <div id="product-list"></div>
+    <main class="p-4 max-w-6xl mx-auto">
+      <h2 class="text-2xl font-semibold mb-4">Produkte</h2>
+      <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
 
-      <h3>Bestellung</h3>
-      <form id="order-form">
-        <input type="text" id="name" placeholder="Name" required />
-        <input type="text" id="phone" placeholder="Telefonnummer" required />
-        <select id="selected-product"></select>
-        <button type="submit">Bestellen</button>
+      <h3 class="text-xl font-semibold mt-8 mb-2">Bestellung</h3>
+      <form id="order-form" class="bg-white p-4 rounded-lg shadow-md max-w-md">
+        <div class="mb-4">
+          <input type="text" id="name" placeholder="Name" required class="w-full border px-3 py-2 rounded-md">
+        </div>
+        <div class="mb-4">
+          <input type="text" id="phone" placeholder="Telefonnummer" required class="w-full border px-3 py-2 rounded-md">
+        </div>
+        <div class="mb-4">
+          <select id="selected-product" class="w-full border px-3 py-2 rounded-md"></select>
+        </div>
+        <button type="submit" class="bg-[var(--accent)] text-white py-2 px-4 rounded-md">Bestellen</button>
       </form>
     </main>
   </div>
@@ -54,7 +55,6 @@
     import { collection, getDocs, query, where, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
     const db = window.db;
-
     const loginForm = document.getElementById("login-form");
     const loginArea = document.getElementById("login-area");
     const mainContent = document.getElementById("main-content");
@@ -76,7 +76,7 @@
         if (userData.isAdmin) {
           const btn = document.createElement("a");
           btn.href = "admin.html";
-          btn.innerHTML = '<button>Adminbereich</button>';
+          btn.innerHTML = '<button class="bg-gray-800 text-white px-4 py-2 rounded-md">Adminbereich</button>';
           adminButtonArea.appendChild(btn);
         }
 
@@ -92,12 +92,15 @@
       const querySnapshot = await getDocs(collection(db, "products"));
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        const div = document.createElement("div");
-        div.innerHTML = `
-          <strong>${data.name}</strong> - ${data.price}€<br>
-          <img src="${data.imageUrl}" alt="${data.name}" style="max-width: 200px"><br><br>
+
+        const card = document.createElement("div");
+        card.className = "bg-white rounded-lg shadow-md p-4";
+        card.innerHTML = `
+          <img src="${data.imageUrl}" alt="${data.name}" class="w-full h-40 object-cover rounded-md mb-2">
+          <h4 class="text-lg font-semibold">${data.name}</h4>
+          <p class="text-sm text-gray-600">${data.price}€</p>
         `;
-        productList.appendChild(div);
+        productList.appendChild(card);
 
         const option = document.createElement("option");
         option.value = doc.id;
