@@ -1,4 +1,3 @@
-<!-- firebase-config.js -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
   import { getFirestore } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
