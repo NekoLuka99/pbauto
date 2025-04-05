@@ -13,42 +13,34 @@
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
-  <div id="login-area" class="flex items-center justify-center min-h-screen">
-    <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
-      <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
-      <form id="login-form" class="flex flex-col gap-4">
-        <input type="text" id="username" placeholder="Benutzername" required class="border px-3 py-2 rounded-md">
-        <input type="password" id="password" placeholder="Passwort" required class="border px-3 py-2 rounded-md">
-        <button type="submit" class="bg-[var(--accent)] text-white py-2 rounded-md hover:opacity-90">Login</button>
-      </form>
-    </div>
-  </div>
+  <header class="bg-white shadow-md p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+    <h1 class="text-xl font-bold text-[var(--accent)]">PB-Automobile</h1>
+    <form id="login-form" class="flex gap-2 items-center">
+      <input type="text" id="username" placeholder="Benutzername" required class="border px-3 py-1 rounded-md">
+      <input type="password" id="password" placeholder="Passwort" required class="border px-3 py-1 rounded-md">
+      <button type="submit" class="bg-[var(--accent)] text-white px-4 py-1 rounded-md hover:opacity-90">Login</button>
+    </form>
+    <div id="admin-button-area" class="hidden"></div>
+  </header>
 
-  <div id="main-content" style="display: none;">
-    <header class="bg-white shadow-md p-4 flex justify-between items-center">
-      <h1 class="text-xl font-bold text-[var(--accent)]">PB-Automobile</h1>
-      <div id="admin-button-area"></div>
-    </header>
+  <main id="main-content" class="p-4 max-w-6xl mx-auto hidden">
+    <h2 class="text-2xl font-semibold mb-4">Produkte</h2>
+    <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
 
-    <main class="p-4 max-w-6xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-4">Produkte</h2>
-      <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
-
-      <h3 class="text-xl font-semibold mt-8 mb-2">Bestellung</h3>
-      <form id="order-form" class="bg-white p-4 rounded-lg shadow-md max-w-md">
-        <div class="mb-4">
-          <input type="text" id="name" placeholder="Name" required class="w-full border px-3 py-2 rounded-md">
-        </div>
-        <div class="mb-4">
-          <input type="text" id="phone" placeholder="Telefonnummer" required class="w-full border px-3 py-2 rounded-md">
-        </div>
-        <div class="mb-4">
-          <select id="selected-product" class="w-full border px-3 py-2 rounded-md"></select>
-        </div>
-        <button type="submit" class="bg-[var(--accent)] text-white py-2 px-4 rounded-md">Bestellen</button>
-      </form>
-    </main>
-  </div>
+    <h3 class="text-xl font-semibold mt-8 mb-2">Bestellung</h3>
+    <form id="order-form" class="bg-white p-4 rounded-lg shadow-md max-w-md">
+      <div class="mb-4">
+        <input type="text" id="name" placeholder="Name" required class="w-full border px-3 py-2 rounded-md">
+      </div>
+      <div class="mb-4">
+        <input type="text" id="phone" placeholder="Telefonnummer" required class="w-full border px-3 py-2 rounded-md">
+      </div>
+      <div class="mb-4">
+        <select id="selected-product" class="w-full border px-3 py-2 rounded-md"></select>
+      </div>
+      <button type="submit" class="bg-[var(--accent)] text-white py-2 px-4 rounded-md">Bestellen</button>
+    </form>
+  </main>
 
   <script type="module" src="firebase-config.js"></script>
   <script type="module">
@@ -56,7 +48,6 @@
 
     const db = window.db;
     const loginForm = document.getElementById("login-form");
-    const loginArea = document.getElementById("login-area");
     const mainContent = document.getElementById("main-content");
     const adminButtonArea = document.getElementById("admin-button-area");
 
@@ -70,13 +61,15 @@
 
       if (!snapshot.empty) {
         const userData = snapshot.docs[0].data();
-        loginArea.style.display = "none";
-        mainContent.style.display = "block";
+
+        loginForm.classList.add("hidden");
+        mainContent.classList.remove("hidden");
 
         if (userData.isAdmin) {
           const btn = document.createElement("a");
           btn.href = "admin.html";
           btn.innerHTML = '<button class="bg-gray-800 text-white px-4 py-2 rounded-md">Adminbereich</button>';
+          adminButtonArea.classList.remove("hidden");
           adminButtonArea.appendChild(btn);
         }
 
