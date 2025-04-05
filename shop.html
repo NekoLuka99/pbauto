@@ -13,13 +13,29 @@
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
-  <header class="bg-white shadow-md p-4 flex justify-between items-center">
+  <header class="bg-white shadow-md p-4 flex flex-col md:flex-row justify-between items-center gap-4">
     <h1 class="text-xl font-bold text-[var(--accent)]">PB-Automobile Shop</h1>
     <a href="index.html" class="text-sm text-gray-600 hover:underline">Zurück zur Startseite</a>
   </header>
 
+  <div class="bg-white p-4 shadow-md sticky top-0 z-10">
+    <div class="flex flex-wrap gap-2 justify-center" id="category-tabs">
+      <button data-category="all" class="tab-btn bg-[var(--accent)] text-white px-3 py-1 rounded">Alle</button>
+      <button data-category="vans" class="tab-btn bg-gray-200 px-3 py-1 rounded">Vans</button>
+      <button data-category="trucks" class="tab-btn bg-gray-200 px-3 py-1 rounded">Trucks</button>
+      <button data-category="compacts" class="tab-btn bg-gray-200 px-3 py-1 rounded">Compacts</button>
+      <button data-category="coupes" class="tab-btn bg-gray-200 px-3 py-1 rounded">Coupes</button>
+      <button data-category="musclecars" class="tab-btn bg-gray-200 px-3 py-1 rounded">Muscle Cars</button>
+      <button data-category="offroad" class="tab-btn bg-gray-200 px-3 py-1 rounded">Off-Road</button>
+      <button data-category="suv" class="tab-btn bg-gray-200 px-3 py-1 rounded">SUV</button>
+      <button data-category="sedan" class="tab-btn bg-gray-200 px-3 py-1 rounded">Sedans</button>
+      <button data-category="sport" class="tab-btn bg-gray-200 px-3 py-1 rounded">Sport</button>
+      <button data-category="sportclassic" class="tab-btn bg-gray-200 px-3 py-1 rounded">Sport-Classic</button>
+      <button data-category="supersport" class="tab-btn bg-gray-200 px-3 py-1 rounded">Supersport</button>
+    </div>
+  </div>
+
   <main class="p-4 max-w-6xl mx-auto">
-    <h2 class="text-2xl font-semibold mb-4">Unsere Produkte</h2>
     <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
   </main>
 
@@ -29,24 +45,39 @@
 
     const db = window.db;
     const productList = document.getElementById("product-list");
+    const tabButtons = document.querySelectorAll(".tab-btn");
+
+    let allProducts = [];
 
     async function loadProducts() {
       const querySnapshot = await getDocs(collection(db, "products"));
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
+      allProducts = querySnapshot.docs.map(doc => doc.data());
+      showProducts("all");
+    }
 
+    function showProducts(category) {
+      productList.innerHTML = "";
+      const filtered = category === "all" ? allProducts : allProducts.filter(p => p.category === category);
+
+      filtered.forEach((data) => {
         const card = document.createElement("div");
         card.className = "bg-white rounded-lg shadow-md p-4";
         card.innerHTML = `
           <img src="${data.imageUrl}" alt="${data.name}" class="w-full h-40 object-cover rounded-md mb-2">
           <h4 class="text-lg font-semibold">${data.name}</h4>
-          <p class="text-sm text-gray-600 mb-2">${data.price}€</p>
-          <button class="bg-[var(--accent)] text-white px-4 py-2 rounded-md">Jetzt bestellen</button>
+          <p class="text-sm text-gray-500">Kategorie: ${data.category}</p>
         `;
-
         productList.appendChild(card);
       });
     }
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabButtons.forEach(b => b.classList.remove("bg-[var(--accent)]", "text-white"));
+        btn.classList.add("bg-[var(--accent)]", "text-white");
+        showProducts(btn.dataset.category);
+      });
+    });
 
     loadProducts();
   </script>
