@@ -15,12 +15,15 @@
 <body class="bg-gray-100 min-h-screen">
   <header class="bg-white shadow-md p-4 flex flex-col md:flex-row justify-between items-center gap-4">
     <h1 class="text-xl font-bold text-[var(--accent)]">PB-Automobile</h1>
-    <form id="login-form" class="flex gap-2 items-center">
-      <input type="text" id="username" placeholder="Benutzername" required class="border px-3 py-1 rounded-md">
-      <input type="password" id="password" placeholder="Passwort" required class="border px-3 py-1 rounded-md">
-      <button type="submit" class="bg-[var(--accent)] text-white px-4 py-1 rounded-md hover:opacity-90">Login</button>
-    </form>
-    <div id="admin-button-area" class="hidden"></div>
+    <div class="flex gap-4 items-center">
+      <form id="login-form" class="flex gap-2 items-center">
+        <input type="text" id="username" placeholder="Benutzername" required class="border px-3 py-1 rounded-md">
+        <input type="password" id="password" placeholder="Passwort" required class="border px-3 py-1 rounded-md">
+        <button type="submit" class="bg-[var(--accent)] text-white px-4 py-1 rounded-md hover:opacity-90">Login</button>
+      </form>
+      <div id="admin-button-area" class="hidden"></div>
+      <button id="logout-btn" class="hidden bg-red-500 text-white px-4 py-1 rounded-md">Logout</button>
+    </div>
   </header>
 
   <main class="p-4 max-w-6xl mx-auto">
